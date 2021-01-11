@@ -169,15 +169,6 @@
       :else
       (recur
         (take-turn (first sekwencja-gracza) tablica)
-        (rest sekwencja-gracza)))))
+        (rest sekwencja-gracza))))))
 
   (graj poczatkujaca-tablica)
-
-
-
-
-
-
-
-
-
