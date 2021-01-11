@@ -122,7 +122,7 @@
 
 (def sekwencja-gracza
   "Tworzymy sobie nieskończoną leniwą sekwencje dla turn gracza"
-  (cycle [:o :x]))
+  (cycle [:x :o]))
 
 (take 10 (cycle [:o :x]))
 ;;=> (:o :x :o :x :o :x :o :x :o :x)
@@ -133,7 +133,7 @@
   [tablica]
   (let [keyboard-input                                      ;; lokalna zmienna keyboard-input
         (try
-          (. Integer parseInt (read-line))
+          (.Integer (read-line))
           (catch Exception e nil))]
     (if (some #{keyboard-input} tablica)
       keyboard-input
@@ -169,3 +169,5 @@
       (recur
         (wez-runde (first sekwencja-gracza) tablica)
         (rest sekwencja-gracza))))))
+
+(graj poczatkujaca-tablica sekwencja-gracza)
