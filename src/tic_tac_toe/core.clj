@@ -131,9 +131,9 @@
   "Czyta nasze ruchy za pomoca 'read-line' i przetwarza je na inty
   Zwraca ruchy jeżeli wartosc istnieje na tablicy, jesli nie zwraca 'nil'"
   [tablica]
-  (let [keyboard-input                                      ;; lokalna zmienna keyboard-input
+  (let [keyboard-input
         (try
-          (.Integer (read-line))
+          (. Integer parseInt (read-line))
           (catch Exception e nil))]
     (if (some #{keyboard-input} tablica)
       keyboard-input
@@ -143,14 +143,15 @@
   "Pyta się gracza czy zrobi ruch i informuje go wtedy, kiedy gracz popełni błąd
   przy stawianiu kolejnego ruchu"
   [gracz tablica]
-  (println (str (nazwa-gracza gracz) ":") "Zrob ruch (nacisnij numer pomiedzy 1-9 i nacisnij enter)"
-           (loop [ruch (nastepny-ruch tablica)]
-             (if ruch
-                (assoc tablica (dec ruch) gracz))
-(do
-    (println (str (nazwa-gracza gracz) ":") "Mijesce w ktorym chcesz postawic znak jest juz zajete lub zle postawiles ruch,
-    prosze abys zaznaczyl inne miejsce")
-    (recur (nastepny-ruch tablica))))))
+  (println (str (nazwa-gracza gracz) ":") "\nWybierz swój ruch (naciśnij liczbę od 1 do 9, a następnie naciśnij enter)")
+  (loop [move (nastepny-ruch tablica)]
+    (if move
+      (assoc tablica (dec move) gracz)
+
+      ;; else
+      (do
+        (println (str (nazwa-gracza gracz) ":") "Ten ruch który postawiłes jest zly, zrob inny!!")
+        (recur (nastepny-ruch tablica))))))
 
 (defn graj
   "Pętla gry.
@@ -170,4 +171,3 @@
         (wez-runde (first sekwencja-gracza) tablica)
         (rest sekwencja-gracza))))))
 
-(graj poczatkujaca-tablica sekwencja-gracza)
