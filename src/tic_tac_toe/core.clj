@@ -59,10 +59,6 @@
 ;; x o o
 ;; x o x
 
-#_ (defn player-name
-     "Przekonwertuje gracza słowa kluczowe na stringi z :x lub :o na o lub x"
-     [gracz]
-     (subs (str gracz) 1))
 
 (name :x)
 ;; => "x"
