@@ -2,6 +2,13 @@
 
 ;; GRA: TIC-TAC-TOE
 ;; Autor: Karolina Wadecka nr.albumu 36336
+;; skomentowałam kod więc wiadomo co do czego jest :D
+;; MIŁEGO GRANIA!! <3
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;TWORZENIE PODSTAW
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def poczatkujaca-tablica
   "Podstawowa tablica, używana wtedy kiedy nowa gra się rozpoczyna"
@@ -59,11 +66,118 @@
 ;; x o o
 ;; x o x
 
-
 (name :x)
 ;; => "x"
 
-(name :o)
-;; => "o"
-
 ;; (clojure.string/upper-case (name %)) - Duże X i Duże O. Taki element stylistyczny :)
+
+(defn nazwa-gracza
+  "Przekonwertuje :o lub :x na stringa o lub x"
+  [gracz]
+  (clojure.string/upper-case (name gracz)))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;WYKRYWANIE WYGRANEGO OSOBNIKA
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(defn trojki-wygrany?
+  "Jeżeli linia zawiera 3 x lub o, zwróć :x lub :o, jeżeli nie zawiera to zwróć 'nil'"
+  [trojki]
+  (if (every? #{:x} trojki)
+    :x
+    (if (every? #{:o} trojki)
+      :o)))
+;;testy czy funkcja działa
+(trojki-wygrany? [1 2 3])
+;; => nil
+(trojki-wygrany? [:x 2 3])
+;; => nil
+(trojki-wygrany? [:x :x 5])
+;; => nil
+(trojki-wygrany? [:x :x :x])
+;;=> :x
+
+(trojki-wygrany? [:o 2 4])
+;;=> nil
+(trojki-wygrany? [:o :o 4])
+;;=> nil
+(trojki-wygrany? [:o :o :o])
+;;=> :o
+
+(defn wygrany?
+  "Zwraca zwycięzce jeżeli taki jest, jak nie ma to zwraca 'nil'"
+  [tablica]
+  (first
+    (filter #{:x :o} (map trojki-wygrany? (trojki tablica)))))
+
+;;testy kodu
+(wygrany? poczatkujaca-tablica)                             ;; czy na początku był jakis wygrany koles?
+;;=> nil
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;PODZIAŁ NA RUNDY W GRZE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def sekwencja-gracza
+  "Tworzymy sobie nieskończoną leniwą sekwencje dla turn gracza"
+  (cycle [:o :x]))
+
+(take 10 (cycle [:o :x]))
+;;=> (:o :x :o :x :o :x :o :x :o :x)
+
+(defn nastepny-ruch
+  "Czyta nasze ruchy za pomoca 'read-line' i przetwarza je na inty
+  Zwraca ruchy jeżeli wartosc istnieje na tablicy, jesli nie zwraca 'nil'"
+  [tablica]
+  (let [keyboard-input                                      ;; lokalna zmienna keyboard-input
+        (try
+          (. Integer parseInt (read-line))
+          (catch Exception e nil))]
+    (if (some #{keyboard-input} tablica)
+      keyboard-input
+      nil)))
+
+(defn wez-runde
+  "Pyta się gracza czy zrobi ruch i informuje go wtedy, kiedy gracz popełni błąd
+  przy stawianiu kolejnego ruchu"
+  [gracz tablica]
+  (println (str (nazwa-gracza gracz) ":") "Zrob ruch (nacisnij numer pomiedzy 1-9 i nacisnij enter)"
+           (loop [move (nastepny-ruch tablica)]
+             (if ruch)
+                (assoc tablica (dec ruch) gracz))))
+
+  (do
+    (println (str (nazwa-gracza gracz) ":") "Mijesce w ktorym chcesz postawic znak jest juz zajete lub zle postawiles ruch,
+    prosze abys zaznaczyl inne miejsce")
+    (recur (nastepny-ruch tablica)))
+
+(defn graj
+  "Pętla gry.
+  Robimy alternatywne tury dla gracza dopuki ktos
+  wygra albo tablica bedzie pelna"
+  [poczatkujaca-tablica]
+  (loop [tablica poczatkujaca-tablica
+         sekwencja-gracza sekwencja-gracza]
+    (let [wygrany (wygrany? tablica)]
+    (println "Zaktualizowana tablica:")
+    (wyswietlacz tablica)
+    (cond
+      wygrany (println "Gracz " (nazwa-gracza wygrany) " wygrywa!!!")
+      (pelna-tablica? tablica) (println "Jest remis!! :D")
+      :else
+      (recur
+        (take-turn (first sekwencja-gracza) tablica)
+        (rest sekwencja-gracza)))))
+
+  (graj poczatkujaca-tablica)
+
+
+
+
+
+
+
+
+
