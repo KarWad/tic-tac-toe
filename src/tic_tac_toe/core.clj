@@ -144,20 +144,19 @@
   przy stawianiu kolejnego ruchu"
   [gracz tablica]
   (println (str (nazwa-gracza gracz) ":") "Zrob ruch (nacisnij numer pomiedzy 1-9 i nacisnij enter)"
-           (loop [move (nastepny-ruch tablica)]
-             (if ruch)
-                (assoc tablica (dec ruch) gracz))))
-
-  (do
+           (loop [ruch (nastepny-ruch tablica)]
+             (if ruch
+                (assoc tablica (dec ruch) gracz))
+(do
     (println (str (nazwa-gracza gracz) ":") "Mijesce w ktorym chcesz postawic znak jest juz zajete lub zle postawiles ruch,
     prosze abys zaznaczyl inne miejsce")
-    (recur (nastepny-ruch tablica)))
+    (recur (nastepny-ruch tablica))))))
 
 (defn graj
   "Pętla gry.
   Robimy alternatywne tury dla gracza dopuki ktos
   wygra albo tablica bedzie pelna"
-  [poczatkujaca-tablica]
+  [poczatkujaca-tablica sekwencja-gracza]
   (loop [tablica poczatkujaca-tablica
          sekwencja-gracza sekwencja-gracza]
     (let [wygrany (wygrany? tablica)]
@@ -168,7 +167,7 @@
       (pelna-tablica? tablica) (println "Jest remis!! :D")
       :else
       (recur
-        (take-turn (first sekwencja-gracza) tablica)
+        (wez-runde (first sekwencja-gracza) tablica)
         (rest sekwencja-gracza))))))
 
-  (graj poczatkujaca-tablica)
+(graj poczatkujaca-tablica sekwencja-gracza)
