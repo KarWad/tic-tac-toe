@@ -170,4 +170,5 @@
       (recur
         (wez-runde (first sekwencja-gracza) tablica)
         (rest sekwencja-gracza))))))
+(graj poczatkujaca-tablica sekwencja-gracza)
 
